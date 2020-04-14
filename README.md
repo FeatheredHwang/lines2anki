@@ -1,2 +1,4 @@
-# audio-import
-Anki add-on for importing audio files as new notes. Optionally you can add subtitle and background image for them.
+# subs2anki
+Anki add-on for importing audio media with subtitile as new notes. Personally I use this to import Aboboo sentence library.
+
+
