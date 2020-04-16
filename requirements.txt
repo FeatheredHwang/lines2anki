@@ -1,0 +1,31 @@
+
+########################        Developing Environment          ########################
+
+# Mypy is essentially a Python linter on steroids,
+# and it can catch many programming errors by analyzing your program, without actually having to run it.
+# Mypy is required by Anki add-on development.
+mypy
+
+# Qt is set of cross-platform C++ libraries that implement high-level APIs for accessing many aspects
+# of modern desktop and mobile systems.
+# PyQt5 is a comprehensive set of Python bindings for Qt v5.
+# (required by pyqt5-tools)
+# PyQt5
+
+
+########################            Developing Tools            ########################
+
+# Pylint is a Python static code analysis tool which looks for programming errors.
+pylint
+
+# Pyqt5-tools provide tools such as Qt Designer
+pyqt5-tools
+
+# Type hints for PyQt5 is needed or Pycharm will pop up to notify you.
+PyQt5-stubs
+
+# Remove a package and its unused dependencies.
+# pip-autoremove
+
+# Display the installed python packages in form of a dependency tree.
+# pipdeptree
