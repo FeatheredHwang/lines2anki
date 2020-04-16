@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+# Copyright: Kyle Hwang <feathered.hwang@hotmail.com>
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
+#
 # Version: 1.0.0
+#
 
 
 """
@@ -31,7 +35,9 @@ from aqt.qt import *
 from anki import notes
 
 # import ui
-from lines2anki import settingsDialog
+from . import settingsDialog
+# import model
+from . import model
 
 # Initialize file path
 MODULE_FILE_DIR = os.path.dirname(sys.modules[__name__].__file__)
