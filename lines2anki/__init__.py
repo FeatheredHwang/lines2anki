@@ -37,7 +37,7 @@ from anki import notes
 # import ui
 from . import settingsDialog
 # import model
-from . import model
+from . import defaultModel
 
 # Initialize file path
 MODULE_FILE_DIR = os.path.dirname(sys.modules[__name__].__file__)
@@ -149,7 +149,7 @@ def do_import():
             sub_ext = sub_files[[r[0] for r in sub_files].index(root)][1]
             # Opening with utf-8-sig encoding, which will remove BOM (Byte order mark) if it exists
             with open(root + sub_ext, mode='r', encoding='utf-8-sig') as f:
-                line = re.sub(r'\[[0-9]+:[0-9]+:[0-9]+\]', '', f.read())
+                line = re.sub(r'\[[0-9:.]+\]', '', f.read())
             # Update progress
             p += 1
         # If sub file not found, index(root) will raise ValueError
@@ -178,8 +178,9 @@ def do_import():
             # Assign value to field
             note[field] = data
 
-        # Add Tags
-        note.tags.append(tags)
+        # Add Tags if tags are not empty
+        if tags:
+            note.tags.append(tags)
 
         # Add to collection
         if not mw.col.addNote(note):
