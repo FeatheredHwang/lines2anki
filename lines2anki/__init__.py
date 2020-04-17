@@ -39,10 +39,6 @@ from . import settingsDialog
 # import model
 from . import defaultModel
 
-# Initialize file path
-MODULE_FILE_DIR = os.path.dirname(sys.modules[__name__].__file__)
-SETTINGS_JSON_PATH = MODULE_FILE_DIR + '/settings.json'
-LOG_FILE_PATH = MODULE_FILE_DIR + '/logger.log'
 
 # Support the same media types as the Editor
 AUDIO_TYPES = editor.audio
@@ -65,24 +61,22 @@ FILLING_OPTIONS = [FILL_NOTHING,
                    FILL_LINE,
                    FILL_IMAGE]
 
+
 # set up logging to file - see previous section for more details
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
-                    filename=LOG_FILE_PATH,
+                    filename=os.path.dirname(sys.modules[__name__].__file__) + '/logger.log',
                     filemode='w')
 # print the module's directory
 logging.info(os.path.dirname(sys.modules[__name__].__file__))
 
 
-# def do_test():
-#     """
-#     For testing convenience
-#     """
-#     os.chdir('E:/Test')
-#     mw.col.media.addFile('test.jpg')
-#     mw.col.media.addFile('test.jpg')
-#     mw.col.media.addFile('test.jpg')
+def do_test():
+    """
+    For testing convenience
+    """
+    logging.info(mw.pm.name)
 
 
 def do_import():
@@ -248,9 +242,12 @@ class SettingsDialog(QDialog):
         self.form.buttonBox.rejected.connect(self.reject)
 
         # Import previous settings
+        self.SETTINGS_JSON_PATH = \
+            os.path.dirname(sys.modules[__name__].__file__) \
+            + '/%s-settings.json' % mw.pm.name.replace(' ', '.')
         settings_dict = {}
         try:
-            with open(SETTINGS_JSON_PATH) as f:
+            with open(self.SETTINGS_JSON_PATH) as f:
                 settings_dict = json.load(f)
         except EnvironmentError:
             logging.warning('Settings File Not Found.')
@@ -429,7 +426,7 @@ For how to use this add-on, please refer to
             'fieldMap': self.fieldMap,
             'tags': self.tags
         }
-        with open(SETTINGS_JSON_PATH, 'w') as f:
+        with open(self.SETTINGS_JSON_PATH, 'w') as f:
             f.write(json.dumps(settings_dict, indent=4))
 
         QDialog.accept(self)
@@ -460,6 +457,6 @@ action.triggered.connect(do_import)
 mw.form.menuTools.addAction(action)
 
 # for testing convenience
-# test_action = QAction("TEST", mw)
-# test_action.triggered.connect(do_test)
-# mw.form.menuTools.addAction(test_action)
+test_action = QAction("TEST", mw)
+test_action.triggered.connect(do_test)
+mw.form.menuTools.addAction(test_action)
