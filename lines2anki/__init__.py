@@ -28,7 +28,7 @@ from shutil import copyfile
 # import the main window object (mw) from aqt
 from aqt import mw, editor
 # import the "show info" tool from utils.py
-from aqt.utils import showInfo
+from aqt.utils import showInfo, askUser
 # import all of the Qt GUI library
 from aqt.qt import *
 # import anki notes library
@@ -244,7 +244,7 @@ class SettingsDialog(QDialog):
         # Import previous settings
         self.SETTINGS_JSON_PATH = \
             os.path.dirname(sys.modules[__name__].__file__) \
-            + '/%s-settings.json' % mw.pm.name.replace(' ', '.')
+            + '/settings@%s.json' % mw.pm.name.replace(' ', '.')
         settings_dict = {}
         try:
             with open(self.SETTINGS_JSON_PATH) as f:
@@ -391,9 +391,24 @@ For how to use this add-on, please refer to
             self.browse_dir()
             return
         # validate provenance
-        if not self.prov:
-            showInfo('The provenance is empty, so the word "Unknown" will be used.')
-            self.prov = 'Unknown'
+        try:
+            # Test if a string is filename-ok by creating a file
+            with open(self.prov, 'w'):
+                pass
+            os.remove(self.prov)
+        except (FileNotFoundError, OSError):
+            _prov = 'Unknown'
+            if askUser("""
+Provenance will be used to rename files, so it cannot be empty or contain any of the following characters:\n
+/\\:*?"<>|\n
+If you choose 'Yes', you'll return to edit the provenance.\n
+If you choose 'No', provenance will be '%s'.
+""" % _prov):
+                self.form.provInput.setFocus()
+                self.form.provInput.selectAll()
+                return
+            else:
+                self.prov = _prov
         # validate deck
         if not self.deckName:
             self.deckName = mw.col.decks.current()['name']
