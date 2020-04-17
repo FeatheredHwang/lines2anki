@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright: Kyle Hwang <feathered.hwang@hotmail.com>
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-#
-# Version: 1.0.0
-#
 
 
 """
@@ -22,6 +19,7 @@ import logging
 import random
 import re
 import time
+import unicodedata
 from pathlib import Path
 from shutil import copyfile
 
@@ -38,6 +36,8 @@ from anki import notes
 from . import settingsDialog
 # import model
 from . import defaultModel
+# import test
+from . import test
 
 
 # Support the same media types as the Editor
@@ -70,13 +70,6 @@ logging.basicConfig(level=logging.DEBUG,
                     filemode='w')
 # print the module's directory
 logging.info(os.path.dirname(sys.modules[__name__].__file__))
-
-
-def do_test():
-    """
-    For testing convenience
-    """
-    logging.info(mw.pm.name)
 
 
 def do_import():
@@ -172,9 +165,9 @@ def do_import():
             # Assign value to field
             note[field] = data
 
-        # Add Tags if tags are not empty
-        if tags:
-            note.tags.append(tags)
+        # Add Tags
+        for tag in tags:
+            note.tags.append(tag)
 
         # Add to collection
         if not mw.col.addNote(note):
@@ -236,6 +229,14 @@ class SettingsDialog(QDialog):
         # noinspection PyTypeChecker
         QDialog.__init__(self, mw)
 
+        # keys of json settings dictionary
+        self.DIR_PATH_KEY = 'dirPath'
+        self.PROV_KEY = 'prov'
+        self.DECK_NAME_KEY = 'deckName'
+        self.MODEL_NAME_KEY = 'modelName'
+        self.FIELD_MAP_KEY = 'fieldMap'
+        self.TAGS_TXT_KEY = 'tagsTxt'
+
         self.form = settingsDialog.Ui_settingsDialog()
         self.form.setupUi(self)
         self.form.buttonBox.accepted.connect(self.accept)
@@ -253,38 +254,40 @@ class SettingsDialog(QDialog):
             logging.warning('Settings File Not Found.')
         logging.info('The earlier settings: \n' + json.dumps(settings_dict))
         # dirPath (directory path, default: home path)
-        self.dirPath = settings_dict.get('dirPath', '')
+        self.dirPath = settings_dict.get(self.DIR_PATH_KEY, '')
         if not os.path.exists(self.dirPath):
             self.dirPath = str(Path.home())
         self.form.dirInput.setText(self.dirPath)
         self.form.dirButton.clicked.connect(self.browse_dir)
         # prov (provenance, default: ''/Unknown)
-        self.prov = settings_dict.get('prov', '')
+        self.prov = settings_dict.get(self.PROV_KEY, '')
         self.form.provInput.setText(self.prov)
-        self.form.provInput.editingFinished.connect(self.prov_edited)
+        self.form.provInput.editingFinished.connect(self.prov_updated)
         # deck (default: current deck)
         deck_list = [d['name'] for d in mw.col.decks.all()]
         self.form.deckCombo.addItems(deck_list)
-        self.deckName = settings_dict.get('deckName', '')
+        self.deckName = settings_dict.get(self.DECK_NAME_KEY, '')
         if self.deckName not in deck_list:
             self.deckName = mw.col.decks.current()['name']
         self.form.deckCombo.setCurrentIndex(self.form.deckCombo.findText(self.deckName))
-        self.form.deckCombo.currentIndexChanged.connect(self.deck_changed)
+        self.form.deckCombo.currentIndexChanged.connect(self.deck_updated)
         # model (default: current model)
         model_list = [m['name'] for m in mw.col.models.all()]
         self.form.modelCombo.addItems(model_list)
-        self.modelName = settings_dict.get('modelName', '')
+        self.modelName = settings_dict.get(self.MODEL_NAME_KEY, '')
         if self.modelName not in model_list:
             self.modelName = mw.col.models.current()['name']
         self.form.modelCombo.setCurrentIndex(self.form.modelCombo.findText(self.modelName))
-        self.form.modelCombo.currentIndexChanged.connect(self.model_changed)
+        self.form.modelCombo.currentIndexChanged.connect(self.model_updated)
         # fieldMap (field map, default: empty)
-        self.fieldMap = settings_dict.get('fieldMap', {})
+        self.fieldMap = settings_dict.get(self.FIELD_MAP_KEY, {})
         self.create_field_grid()
-        # tags (default: '')
-        self.tags = settings_dict.get('tags', '')
-        self.form.tagsInput.setText(self.tags)
-        self.form.tagsInput.editingFinished.connect(self.tags_changed)
+        # tags (default: [])
+        self.tags = []
+        self.tagsTxt = settings_dict.get(self.TAGS_TXT_KEY, '')
+        self.form.tagsInput.setText(self.tagsTxt)
+        self.tags_updated()
+        self.form.tagsInput.editingFinished.connect(self.tags_updated)
         # help label
         self.form.helpLabel.setText("""
 <p>
@@ -309,21 +312,21 @@ For how to use this add-on, please refer to
         self.prov = os.path.basename(self.dirPath)
         self.form.provInput.setText(self.prov)
 
-    def prov_edited(self):
+    def prov_updated(self):
         """
         If user edit the content of provenance QLineEdit, change self.prov
         """
         self.prov = self.form.provInput.text()
         logging.info('prov =            ' + self.prov)
 
-    def deck_changed(self):
+    def deck_updated(self):
         """
         If user select another deck in combobox, change self.deckName
         """
         self.deckName = self.form.deckCombo.currentText()
         logging.info('deckName =        ' + self.deckName)
 
-    def model_changed(self):
+    def model_updated(self):
         """
         If user select another model in combobox, change self.modelName
         """
@@ -331,12 +334,15 @@ For how to use this add-on, please refer to
         logging.info('modelName =       ' + self.modelName)
         self.create_field_grid()
 
-    def tags_changed(self):
+    def tags_updated(self):
         """
         If user edit the tags QLineEdit, change self.tags
         """
-        self.tags = self.form.tagsInput.text()
-        logging.info('tags =            ' + self.tags)
+        self.tagsTxt = unicodedata.normalize("NFC", self.form.tagsInput.text())
+        self.tags = mw.col.tags.canonify(mw.col.tags.split(self.tagsTxt))
+        self.tagsTxt = mw.col.tags.join(self.tags).strip()
+        self.form.tagsInput.setText(self.tagsTxt)
+        logging.info('tags =            ' + self.tagsTxt)
 
     def create_field_grid(self):
         """
@@ -430,16 +436,16 @@ If you choose 'No', provenance will be '%s'.
         logging.info("Final deckName  =     " + self.deckName)
         logging.info("Final modelName =     " + self.modelName)
         logging.info('fieldMap = \n' + json.dumps(self.fieldMap, indent=4))
-        logging.info("Final tags =          " + self.tags)
+        logging.info("Final tags =          " + self.tagsTxt)
 
         # save user settings
         settings_dict = {
-            'dirPath': self.dirPath,
-            'prov': self.prov,
-            'deckName': self.deckName,
-            'modelName': self.modelName,
-            'fieldMap': self.fieldMap,
-            'tags': self.tags
+            self.DIR_PATH_KEY: self.dirPath,
+            self.PROV_KEY: self.prov,
+            self.DECK_NAME_KEY: self.deckName,
+            self.MODEL_NAME_KEY: self.modelName,
+            self.FIELD_MAP_KEY: self.fieldMap,
+            self.TAGS_TXT_KEY: self.tagsTxt
         }
         with open(self.SETTINGS_JSON_PATH, 'w') as f:
             f.write(json.dumps(settings_dict, indent=4))
@@ -450,13 +456,13 @@ If you choose 'No', provenance will be '%s'.
         """
         Return a tuple containing the user-defined settings to follow
         for an import. The tuple contains seven items (in order):
-         - Path to chosen media directory
+         - Path of chosen media directory
          - The imported lines' provenance
-         - The deck where notes imported into
-         - The model (note type) to use for new notes
+         - The deck name
+         - The model (note type) name
          - A dictionary that maps each of the fields in the model to an
            integer index from the ACTIONS list
-         - The tags to be added
+         - The tags list
          - True/False indicating whether the user clicked OK/Cancel
         """
         if self.result() == QDialog.Rejected:
@@ -470,8 +476,3 @@ action = QAction("Lines Import...", mw)
 action.triggered.connect(do_import)
 # and add it to the tools menu
 mw.form.menuTools.addAction(action)
-
-# for testing convenience
-test_action = QAction("TEST", mw)
-test_action.triggered.connect(do_test)
-mw.form.menuTools.addAction(test_action)
