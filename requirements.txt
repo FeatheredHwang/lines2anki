@@ -12,6 +12,16 @@ mypy
 # (required by pyqt5-tools)
 # PyQt5
 
+# It will raise error when fetch Anki’s bundled source code:
+# `Running setup.py install for PyAudio ... error`
+# So we need to install PyAudio through wheel. Find the appropriate `PyAudio-*.whl` file
+# from https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyaudio, and download it.
+# PyAudio
+
+# Anki and Aqt is installed using wheel. Download the `anki-*.whl` and `aqt-*.whl` file
+# corresponding to the version you want to target from https://github.com/ankitects/anki-typecheck
+# anki
+# aqt
 
 ########################            Developing Tools            ########################
 
