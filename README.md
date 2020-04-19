@@ -28,7 +28,7 @@ Spam and Eggs
 
 Back to Anki, selecting the menu item will open the Audio Import window.
 
-![SettingsWidget](https://github.com/feathered-hwang/lines2anki/blob/master/README.assets/Widget.png)
+![SettingsWidget](https://github.com/feathered-hwang/lines2anki/blob/master/README.assets/SettingsWidget.png)
 
 From this window, you are able to:
 
