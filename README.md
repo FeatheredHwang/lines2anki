@@ -4,7 +4,7 @@ Anki add-on for importing lines of movie and TV series as new notes, composed by
 
 Much thanks to [hssm](https://github.com/hssm/media-import), from whom I mocked the structure of programme.
 
-![Link to add-on]()
+[Link to add-on](https://ankiweb.net/shared/info/835340270)
 
 ---
 
@@ -12,7 +12,7 @@ This add-on will allow you to import audio files with lyric(.lrc) into your Anki
 
 When the add-on is installed, a `Lines Import...` option will be added to the `Tools` menu.
 
-![Menu]()
+![Menu](https://github.com/feathered-hwang/lines2anki/blob/master/README.assets/Menu.png)
 
 Before you do importing, you are supposed to organize the files first. Firstly put audio files as well as lyric files (with the same name) into the same folder. Rename the folder as the provenance of the audio. Optionally you can add several pictures into the folder, the add-on can select a random one from them as a part of the note.
 
@@ -28,7 +28,7 @@ Spam and Eggs
 
 Back to Anki, selecting the menu item will open the Audio Import window.
 
-![SettingsWidget]()
+![SettingsWidget](https://github.com/feathered-hwang/lines2anki/blob/master/README.assets/Widget.png)
 
 From this window, you are able to:
 
@@ -58,7 +58,7 @@ Here is a list of the content available to insert into fields.
 
 All the new generated cards are added to the selected deck.
 
-![Complete]()
+![Complete](https://github.com/feathered-hwang/lines2anki/blob/master/README.assets/Complete.png)
 
 ## Developing Guidance
 
