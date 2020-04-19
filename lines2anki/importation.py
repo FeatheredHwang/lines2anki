@@ -132,7 +132,7 @@ def do_import():
             elif option == FILL_PROV:
                 data = prov
             elif option == FILL_AUDIO:
-                data = u'[sound:%s]' % std_root
+                data = u'[sound:%s]' % std_name
             elif option == FILL_LINE:
                 data = line
             elif option == FILL_IMAGE:
