@@ -66,10 +66,10 @@ This is my very first try on writing Anki Add-ons. It's not that enjoyable but w
 
 ### Developing Environment
 
-- Operate system    Windows 10
-- IDE               Pycharm, Visual Studio Code (used for viewing .log files)
-- Python            Python 3.8
-- Anki              Anki 2.1
+- Windows 10
+- Python 3.8
+- Anki 2.1
+- IDE: Pycharm, Visual Studio Code (used for viewing .log files)
 
 ### Mistakes I've made
 
@@ -82,3 +82,9 @@ This is my very first try on writing Anki Add-ons. It's not that enjoyable but w
    # Wrong
    action.triggered.connect(do_function())
    ```
+
+### Known issues
+
+- Media can't display properly on PC just after importation.
+Besides, the main window (deck list) freeze so that one cannot select a deck to study.
+These problems will gone after re-open anki.
