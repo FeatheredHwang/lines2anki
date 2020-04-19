@@ -43,8 +43,8 @@ After accepted, all the audio and image files will be imported into media.collec
 
 ```bash
 collection.media
-|___ Spam.and.Eggs.audio-1587037400.150538(1).mp3
-|___ Spam.and.Eggs.audio-1587037400.179473(2).mp3
+|___ Spam.and.Eggs.audio(1)-1587037400.150538.mp3
+|___ Spam.and.Eggs.audio(2)-1587037400.179473.mp3
 |___ Spam.and.Eggs.image-1587037400.1434484.jpeg
 ```
 

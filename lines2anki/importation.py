@@ -98,7 +98,7 @@ def do_import():
 
     # Create a note for each audio file, and add it to Anki collection
     for i, (root, ext) in enumerate(audio_files):
-        std_root = std_prefix + '.audio-' + str(time.time()) + '(' + str(i + 1) + ')'
+        std_root = std_prefix + '.audio' + '(' + str(i + 1) + ')' + '-' + str(time.time())
         std_name = std_root + ext
         copyfile(root + ext, std_name)
         mw.col.media.addFile(std_name)
