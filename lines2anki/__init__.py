@@ -34,8 +34,8 @@ from anki import notes
 
 # import ui
 from . import settingsDialog
-# import model
-from . import defaultModel
+# TODO: import a detailed beautified model
+# from . import builtinModel
 # import test
 from . import test
 
