@@ -33,7 +33,7 @@ AUDIO_TYPES = editor.audio
 IMAGE_TYPES = editor.pics
 # Support lyric files as subtitles for now
 # TODO Add support to other lyric types
-SUB_TYPES = ("lrc",)
+SUB_TYPES = ("lrc", "txt",)
 
 # Field Map Choices
 FILL_NOTHING = ''
@@ -115,6 +115,7 @@ def do_import():
             # Opening with utf-8-sig encoding, which will remove BOM (Byte order mark) if it exists
             with open(root + sub_ext, mode='r', encoding='utf-8-sig') as f:
                 line = re.sub(r'\[[0-9:.]+\]', '', f.read())
+                line = re.sub(r'\n+', r'<br>', line)
             # Update progress
             p += 1
         # If sub file not found, index(root) will raise ValueError
