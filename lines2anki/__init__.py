@@ -39,6 +39,6 @@ from . import importation
 
 # import test module if exist
 try:
-    from .tester import test
+    from .testing import test
 except ImportError:
     logging.info("test module doesn't exist.")
